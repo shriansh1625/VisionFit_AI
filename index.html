@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workout Trainer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>AI Workout Trainer</h1>
+
+    <div id="auth-container">
+        <div class="auth-form">
+            <h3>Sign Up / Log In</h3>
+            <input type="email" id="email-input" placeholder="Email">
+            <input type="password" id="password-input" placeholder="Password">
+            <div class="auth-buttons">
+                <button id="login-btn" class="btn">Log In</button>
+                <button id="signup-btn" class="btn">Sign Up</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="app-container" class="hidden">
+        <div id="user-status">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="btn btn-small">Log Out</button>
+        </div>
+
+        <div id="main-content">
+            <div class="settings-panel">
+                <div class="setting">
+                    <label for="reps-input">Reps per Set:</label>
+                    <input type="number" id="reps-input" value="10" min="1">
+                </div>
+                <div class="setting">
+                    <label for="sets-input">Total Sets:</label>
+                    <input type="number" id="sets-input" value="3" min="1">
+                </div>
+                <div class="setting">
+                    <label>Track Side:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="left-side" name="side" value="left" checked>
+                        <label for="left-side">Left</label>
+                        <input type="radio" id="right-side" name="side" value="right">
+                        <label for="right-side">Right</label>
+                    </div>
+                </div>
+                <button id="start-btn" class="btn">Start Workout</button>
+            </div>
+
+            <div id="exercise-selection">
+                <button id="bicep-curl-btn" class="btn active">Bicep Curls</button>
+                <button id="squat-btn" class="btn">Squats</button>
+            </div>
+
+            <div id="status-container">
+                <div class="status-box">
+                    <h3>SET</h3>
+                    <p id="set-counter">0 / 3</p>
+                </div>
+                <div class="status-box">
+                    <h3>REPS</h3>
+                    <p id="rep-counter">0</p>
+                </div>
+                <div class="status-box">
+                    <h3>FEEDBACK</h3>
+                    <p id="feedback-text">Ready</p>
+                </div>
+            </div>
+
+            <div id="container">
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="output"></canvas>
+            </div>
+        </div>
+
+        <div id="history-container">
+            <h2>Workout History</h2>
+            <ul id="history-list">
+                </ul>
+        </div>
+    </div>
+
+    <div id="rest-overlay" class="hidden">
+        <div id="rest-timer-box">
+            <h2>REST</h2>
+            <p id="rest-time-left">10</p>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
