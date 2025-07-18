@@ -3,99 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Workout Trainer</title>
+    <title>VisionFit AI - Your Personal Trainer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h1>AI Workout Trainer</h1>
+<body class="bg-gray-900 text-gray-100 flex flex-col items-center min-h-screen">
 
-    <div id="auth-container">
-        <div class="auth-form">
-            <h3>Sign Up / Log In</h3>
-            <input type="email" id="email-input" placeholder="Email">
-            <input type="password" id="password-input" placeholder="Password">
-            <div class="auth-buttons">
-                <button id="login-btn" class="btn">Log In</button>
-                <button id="signup-btn" class="btn">Sign Up</button>
+    <canvas id="background-canvas"></canvas>
+
+    <div id="auth-container" class="w-full max-w-md p-8 bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl mt-20 transition-all duration-500">
+        <h2 class="text-3xl font-bold text-center text-gray-100 mb-6">Welcome to VisionFit AI</h2>
+        <div class="auth-form space-y-4">
+            <input type="email" id="email-input" placeholder="Email Address" class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <input type="password" id="password-input" placeholder="Password" class="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <div class="flex space-x-4">
+                <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:-translate-y-0.5">Log In</button>
+                <button id="signup-btn" class="w-full bg-gray-600 text-gray-100 font-bold py-2 px-4 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-500 transition-all duration-200">Sign Up</button>
             </div>
         </div>
     </div>
     
-    <div id="app-container" class="hidden">
-        <div id="user-status">
-            <span id="user-email"></span>
-            <button id="logout-btn" class="btn btn-small">Log Out</button>
-        </div>
+    <div id="app-container" class="hidden w-full max-w-screen-xl mx-auto p-4 sm:p-6">
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-700">
+            <h1 class="text-3xl font-black tracking-tighter text-white">Vision<span class="text-indigo-500">Fit</span></h1>
+            <div class="flex items-center space-x-4">
+                <span id="user-email" class="text-sm text-gray-400 font-medium hidden md:block"></span>
+                <button id="dashboard-view-btn" class="px-3 py-1 font-semibold text-gray-300 hover:text-indigo-400 transition-colors duration-200 rounded-md">Dashboard</button>
+                <button id="workout-view-btn" class="px-3 py-1 font-semibold text-gray-300 hover:text-indigo-400 transition-colors duration-200 bg-indigo-500/20 text-indigo-300 rounded-md">Workout</button>
+                <button id="logout-btn" class="bg-gray-700 text-gray-200 font-bold py-2 px-3 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-600 transition-all duration-200">Log Out</button>
+            </div>
+        </header>
 
-        <div id="main-content">
-            <div class="settings-panel">
-                <div class="setting">
-                    <label for="reps-input">Reps per Set:</label>
-                    <input type="number" id="reps-input" value="10" min="1">
-                </div>
-                <div class="setting">
-                    <label for="sets-input">Total Sets:</label>
-                    <input type="number" id="sets-input" value="3" min="1">
-                </div>
-                <div class="setting">
-                    <label>Track Side:</label>
-                    <div class="radio-group">
-                        <input type="radio" id="left-side" name="side" value="left" checked>
-                        <label for="left-side">Left</label>
-                        <input type="radio" id="right-side" name="side" value="right">
-                        <label for="right-side">Right</label>
+        <main id="view-container">
+            <div id="workout-view" class="view-enter">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div id="container" class="relative aspect-video bg-black rounded-xl shadow-lg overflow-hidden">
+                            <div id="camera-placeholder" class="absolute inset-0 flex flex-col justify-center items-center bg-gray-900 text-gray-400">
+                                <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.55a1.5 1.5 0 01.95 1.41V16a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v2z"></path></svg>
+                                <p class="font-semibold">Camera is off</p><p class="text-sm">Click 'Start Workout' to begin</p>
+                            </div>
+                            <video id="webcam" class="hidden w-full h-full object-cover transform scale-x-[-1]" autoplay playsinline></video>
+                            <canvas id="output" class="absolute top-0 left-0 w-full h-full transform scale-x-[-1]"></canvas>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-800/50 backdrop-blur-xl border border-gray-700 p-6 rounded-2xl shadow-lg text-center"><h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">SET</h3><p id="set-counter" class="text-5xl font-extrabold text-white">0 / 3</p></div>
+                            <div class="bg-gray-800/50 backdrop-blur-xl border border-gray-700 p-6 rounded-2xl shadow-lg text-center"><h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">REPS</h3><p id="rep-counter" class="text-5xl font-extrabold text-white">0</p></div>
+                            <div class="bg-gray-800/50 backdrop-blur-xl border border-gray-700 p-6 rounded-2xl shadow-lg text-center"><h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">FEEDBACK</h3><p id="feedback-text" class="text-3xl font-bold text-white">Ready</p></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="p-6 bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl shadow-lg">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-white">Workout Settings</h3>
+                                <button id="mic-btn" title="Activate Voice Commands" class="p-2 rounded-full hover:bg-gray-700 transition-colors">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4zm5 6a4 4 0 11-8 0V4a4 4 0 118 0v6zM5.5 4a.5.5 0 00-1 0v6a4.5 4.5 0 009 0V4a.5.5 0 00-1 0v6a3.5 3.5 0 01-7 0V4z" clip-rule="evenodd"></path></svg>
+                                </button>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center"><label for="reps-input" class="font-semibold text-gray-300">Reps per Set</label><input type="number" id="reps-input" value="10" min="1" class="w-20 px-2 py-1 bg-gray-900/50 border border-gray-700 rounded-md text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none"></div>
+                                <div class="flex justify-between items-center"><label for="sets-input" class="font-semibold text-gray-300">Total Sets</label><input type="number" id="sets-input" value="3" min="1" class="w-20 px-2 py-1 bg-gray-900/50 border border-gray-700 rounded-md text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none"></div>
+                                <div class="flex justify-between items-center"><label class="font-semibold text-gray-300">Track Side</label><div><input type="radio" id="left-side" name="side" value="left" checked class="text-indigo-600 focus:ring-indigo-500"><label for="left-side" class="ml-2 mr-4 text-gray-300">Left</label><input type="radio" id="right-side" name="side" value="right" class="text-indigo-600 focus:ring-indigo-500"><label for="right-side" class="ml-2 text-gray-300">Right</label></div></div>
+                            </div>
+                            <div id="exercise-buttons" class="mt-6 grid grid-cols-3 gap-2"></div>
+                            <button id="start-btn" class="w-full mt-4 bg-indigo-600 text-white font-bold py-2.5 px-5 rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 transform hover:-translate-y-0.5">Start Workout</button>
+                        </div>
+                        <div class="p-6 bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl shadow-lg">
+                            <h3 class="text-xl font-bold mb-4 text-white">Recent Workouts</h3>
+                            <ul id="history-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
+                        </div>
                     </div>
                 </div>
-                <button id="start-btn" class="btn">Start Workout</button>
             </div>
-
-            <div id="exercise-selection">
-                <button id="bicep-curl-btn" class="btn active">Bicep Curls</button>
-                <button id="squat-btn" class="btn">Squats</button>
-            </div>
-
-            <div id="status-container">
-                <div class="status-box">
-                    <h3>SET</h3>
-                    <p id="set-counter">0 / 3</p>
-                </div>
-                <div class="status-box">
-                    <h3>REPS</h3>
-                    <p id="rep-counter">0</p>
-                </div>
-                <div class="status-box">
-                    <h3>FEEDBACK</h3>
-                    <p id="feedback-text">Ready</p>
-                </div>
-            </div>
-
-            <div id="container">
-                <video id="webcam" autoplay playsinline></video>
-                <canvas id="output"></canvas>
-            </div>
-        </div>
-
-        <div id="history-container">
-            <h2>Workout History</h2>
-            <ul id="history-list">
-                </ul>
-        </div>
+            <div id="dashboard-view" class="hidden"></div>
+        </main>
     </div>
 
-    <div id="rest-overlay" class="hidden">
-        <div id="rest-timer-box">
-            <h2>REST</h2>
-            <p id="rest-time-left">10</p>
-        </div>
+    <div id="rest-overlay" class="hidden fixed top-0 left-0 w-full h-full bg-black/80 flex justify-center items-center z-50 backdrop-blur-sm">
+        <div id="rest-timer-box" class="text-center text-white"><h2 class="text-5xl font-bold tracking-wider">REST</h2><p id="rest-time-left" class="text-8xl font-mono font-bold">10</p></div>
     </div>
+
+    <audio id="click-sound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+    <audio id="success-sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3" preload="auto"></audio>
     
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
-
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection"></script>
     <script src="script.js"></script>
 </body>
 </html>
