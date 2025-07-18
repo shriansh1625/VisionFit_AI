@@ -1,6 +1,6 @@
 // --- Your Firebase Configuration ---
 const firebaseConfig = {
-  apiKey: "AIzaSyBlLFT6LUoBtHgj6i1SK6YWapo596H7Cfk",
+  apiKey: "Your_API_Id_here",
   authDomain: "ai-workout-69040.firebaseapp.com",
   projectId: "ai-workout-69040",
   storageBucket: "ai-workout-69040.firebasestorage.app",
